@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<!--
+  FILE: register.html
+  PURPOSE: Page 2 — Schools and Colleges register their details
+  and fee structures here
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FeeFinder — Register Institution</title>
+  
+  <!-- Register page CSS -->
+  <link rel="stylesheet" href="css/register.css" />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+
+  <!-- ============================================
+       TOP NAVIGATION BAR
+  ============================================ -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <i class="fas fa-graduation-cap nav-logo-icon"></i>
+      <span class="nav-title">FeeFinder</span>
+    </div>
+    <div class="nav-right">
+      <!-- Back to Login button -->
+      <button class="back-btn" onclick="window.location.href='index.html'">
+        <i class="fas fa-arrow-left"></i> Back to Login
+      </button>
+    </div>
+  </nav>
+
+
+  <!-- ============================================
+       PAGE HEADER (Blue gradient banner)
+  ============================================ -->
+  <div class="page-header">
+    <div class="header-circle header-circle-1"></div>
+    <div class="header-circle header-circle-2"></div>
+    <h1 class="header-title">Register Your Institution</h1>
+    <p class="header-subtitle">
+      List your school or college on FeeFinder and help parents find you easily
+    </p>
+  </div>
+
+
+  <!-- ============================================
+       PROGRESS STEPS INDICATOR
+       Shows which step the user is on (1, 2, 3)
+  ============================================ -->
+  <div class="progress-container">
+    <div class="progress-steps">
+      
+      <!-- Step 1 -->
+      <div class="step active" id="step1Indicator">
+        <div class="step-circle">1</div>
+        <div class="step-label">Basic Info</div>
+      </div>
+      
+      <!-- Line between steps -->
+      <div class="step-line" id="line1"></div>
+      
+      <!-- Step 2 -->
+      <div class="step" id="step2Indicator">
+        <div class="step-circle">2</div>
+        <div class="step-label">Details</div>
+      </div>
+      
+      <!-- Line between steps -->
+      <div class="step-line" id="line2"></div>
+      
+      <!-- Step 3 -->
+      <div class="step" id="step3Indicator">
+        <div class="step-circle">3</div>
+        <div class="step-label">Fee Structure</div>
+      </div>
+      
+    </div>
+  </div>
+  <!-- END PROGRESS STEPS -->
+
+
+  <!-- ============================================
+       MAIN FORM CONTAINER
+  ============================================ -->
+  <div class="form-container">
+    <div class="form-card">
+
+
+      <!-- ==========================================
+           STEP 1: Basic Information
+           Institution Name + Type Selection
+      ========================================== -->
+      <div class="form-step" id="formStep1">
+        
+        <div class="step-header">
+          <h2 class="step-title">
+            <i class="fas fa-building"></i> Step 1: Basic Information
+          </h2>
+          <p class="step-subtitle">Tell us about your institution</p>
+        </div>
+        
+        <!-- Institution Name -->
+        <div class="input-group">
+          <label class="input-label">Institution Name *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-school input-icon"></i>
+            <input 
+              type="text" 
+              id="institutionName" 
+              class="input-field" 
+              placeholder="e.g. Delhi Public School, R.K. Puram"
+            />
+          </div>
+        </div>
+        
+        <!-- Type of Institution Dropdown -->
+        <div class="input-group">
+          <label class="input-label">Type of Institution *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-list input-icon"></i>
+            <!-- 
+              onchange="handleInstitutionType()" 
+              → Calls function whenever user selects an option
+            -->
+            <select 
+              id="institutionType" 
+              class="input-field select-field"
+              onchange="handleInstitutionType()"
+            >
+              <option value="">-- Select Institution Type --</option>
+              <option value="school">🏫 School</option>
+              <option value="college">🎓 College</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Next Button -->
+        <button class="btn-primary btn-next" onclick="goToStep2()">
+          Next Step <i class="fas fa-arrow-right"></i>
+        </button>
+        
+        <!-- Message box for step 1 -->
+        <div class="msg-box" id="step1Msg"></div>
+        
+      </div>
+      <!-- END STEP 1 -->
+
+
+      <!-- ==========================================
+           STEP 2A: School Details
+           Shown only when user selects "School"
+      ========================================== -->
+      <div class="form-step" id="formStep2School" style="display:none;">
+        
+        <div class="step-header">
+          <h2 class="step-title">
+            <i class="fas fa-school"></i> Step 2: School Details
+          </h2>
+          <p class="step-subtitle">Fill in the school information</p>
+        </div>
+        
+        <!-- Board Type -->
+        <div class="input-group">
+          <label class="input-label">Board Type *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-certificate input-icon"></i>
+            <select id="boardType" class="input-field select-field">
+              <option value="">-- Select Board --</option>
+              <option value="CBSE">CBSE</option>
+              <option value="ICSE">ICSE</option>
+              <option value="State Board">State Board</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Number of Classes -->
+        <div class="input-group">
+          <label class="input-label">Classes Offered *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-chalkboard-teacher input-icon"></i>
+            <!-- 
+              onchange="generateClassFeeCards()"
+              → When user selects classes, automatically generate fee input cards
+            -->
+            <select 
+              id="numberOfClasses" 
+              class="input-field select-field"
+              onchange="generateClassFeeCards()"
+            >
+              <option value="">-- Select Classes Offered --</option>
+              <option value="nursery-ukg">Nursery to UKG</option>
+              <option value="class1-5">Class 1 to 5</option>
+              <option value="class1-10">Class 1 to 10</option>
+              <option value="class1-12">Class 1 to 12</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Registration ID -->
+        <div class="input-group">
+          <label class="input-label">Registration ID *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-id-card input-icon"></i>
+            <input 
+              type="text" 
+              id="schoolRegId" 
+              class="input-field" 
+              placeholder="e.g. DPS-CBSE-2023-001"
+            />
+          </div>
+          <!-- Small note below the field -->
+          <p class="field-note">
+            <i class="fas fa-info-circle"></i>
+            This will be verified manually by our team.
+          </p>
+        </div>
+        
+        <!-- Address -->
+        <div class="input-group">
+          <label class="input-label">Full Address *</label>
+          <div class="input-wrapper textarea-wrapper">
+            <i class="fas fa-map-marker-alt input-icon" style="top:14px;"></i>
+            <textarea 
+              id="schoolAddress" 
+              class="input-field textarea-field" 
+              placeholder="Enter complete school address with city, state and PIN code"
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+        
+        <!-- Contact Number -->
+        <div class="input-group">
+          <label class="input-label">Contact Number *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-phone input-icon"></i>
+            <input 
+              type="tel" 
+              id="schoolContact" 
+              class="input-field" 
+              placeholder="Enter school contact number"
+            />
+          </div>
+        </div>
+        
+        <!-- Email -->
+        <div class="input-group">
+          <label class="input-label">Official Email *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope input-icon"></i>
+            <input 
+              type="email" 
+              id="schoolEmail" 
+              class="input-field" 
+              placeholder="Enter school official email"
+            />
+          </div>
+        </div>
+        
+        <!-- Navigation Buttons -->
+        <div class="btn-row">
+          <button class="btn-back" onclick="goToStep1()">
+            <i class="fas fa-arrow-left"></i> Back
+          </button>
+          <button class="btn-primary" onclick="goToStep3School()">
+            Next: Fee Structure <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+        
+        <div class="msg-box" id="step2SchoolMsg"></div>
+        
+      </div>
+      <!-- END STEP 2A SCHOOL -->
+
+
+      <!-- ==========================================
+           STEP 2B: College Details
+           Shown only when user selects "College"
+      ========================================== -->
+      <div class="form-step" id="formStep2College" style="display:none;">
+        
+        <div class="step-header">
+          <h2 class="step-title">
+            <i class="fas fa-university"></i> Step 2: College Details
+          </h2>
+          <p class="step-subtitle">Fill in the college information</p>
+        </div>
+        
+        <!-- College Type -->
+        <div class="input-group">
+          <label class="input-label">College Type *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-graduation-cap input-icon"></i>
+            <select id="collegeType" class="input-field select-field">
+              <option value="">-- Select College Type --</option>
+              <option value="Engineering">Engineering</option>
+              <option value="Medical">Medical</option>
+              <option value="Degree">Degree</option>
+              <option value="Polytechnic">Polytechnic</option>
+              <option value="MBA">MBA</option>
+              <option value="MCA">MCA</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Branch Selection -->
+        <div class="input-group">
+          <label class="input-label">Branches Offered *</label>
+          <p class="field-note" style="margin-bottom: 8px;">
+            <i class="fas fa-info-circle"></i>
+            Select all branches your college offers. 
+            Fee cards will be generated for each branch.
+          </p>
+          
+          <!-- Multi-select checkboxes for branches -->
+          <!-- 
+            User can check multiple branches
+            For each checked branch, we'll generate a fee card in Step 3
+          -->
+          <div class="branch-grid">
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="B.Tech" class="branch-check" />
+              <span class="branch-label">B.Tech</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="M.Tech" class="branch-check" />
+              <span class="branch-label">M.Tech</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="BCA" class="branch-check" />
+              <span class="branch-label">BCA</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="MCA" class="branch-check" />
+              <span class="branch-label">MCA</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="MBA" class="branch-check" />
+              <span class="branch-label">MBA</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="B.Sc" class="branch-check" />
+              <span class="branch-label">B.Sc</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="M.Sc" class="branch-check" />
+              <span class="branch-label">M.Sc</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="B.Com" class="branch-check" />
+              <span class="branch-label">B.Com</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="B.A" class="branch-check" />
+              <span class="branch-label">B.A</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="Pharmacy" class="branch-check" />
+              <span class="branch-label">Pharmacy</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="MBBS" class="branch-check" />
+              <span class="branch-label">MBBS</span>
+            </label>
+            
+            <label class="branch-checkbox">
+              <input type="checkbox" value="Diploma" class="branch-check" />
+              <span class="branch-label">Diploma</span>
+            </label>
+            
+          </div>
+        </div>
+        
+        <!-- Registration ID -->
+        <div class="input-group">
+          <label class="input-label">Registration ID *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-id-card input-icon"></i>
+            <input 
+              type="text" 
+              id="collegeRegId" 
+              class="input-field" 
+              placeholder="e.g. AICTE-ENG-2023-456"
+            />
+          </div>
+          <p class="field-note">
+            <i class="fas fa-info-circle"></i>
+            This will be verified manually by our team.
+          </p>
+        </div>
+        
+        <!-- Address -->
+        <div class="input-group">
+          <label class="input-label">Full Address *</label>
+          <div class="input-wrapper textarea-wrapper">
+            <i class="fas fa-map-marker-alt input-icon" style="top:14px;"></i>
+            <textarea 
+              id="collegeAddress" 
+              class="input-field textarea-field" 
+              placeholder="Enter complete college address with city, state and PIN code"
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+        
+        <!-- Contact Number -->
+        <div class="input-group">
+          <label class="input-label">Contact Number *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-phone input-icon"></i>
+            <input 
+              type="tel" 
+              id="collegeContact" 
+              class="input-field" 
+              placeholder="Enter college contact number"
+            />
+          </div>
+        </div>
+        
+        <!-- Email -->
+        <div class="input-group">
+          <label class="input-label">Official Email *</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope input-icon"></i>
+            <input 
+              type="email" 
+              id="collegeEmail" 
+              class="input-field" 
+              placeholder="Enter college official email"
+            />
+          </div>
+        </div>
+        
+        <!-- Navigation Buttons -->
+        <div class="btn-row">
+          <button class="btn-back" onclick="goToStep1()">
+            <i class="fas fa-arrow-left"></i> Back
+          </button>
+          <button class="btn-primary" onclick="goToStep3College()">
+            Next: Fee Structure <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+        
+        <div class="msg-box" id="step2CollegeMsg"></div>
+        
+      </div>
+      <!-- END STEP 2B COLLEGE -->
+
+
+      <!-- ==========================================
+           STEP 3: Fee Structure
+           Dynamic cards generated by JavaScript
+      ========================================== -->
+      <div class="form-step" id="formStep3" style="display:none;">
+        
+        <div class="step-header">
+          <h2 class="step-title">
+            <i class="fas fa-rupee-sign"></i> Step 3: Fee Structure
+          </h2>
+          <p class="step-subtitle">
+            Enter the fee details for each class/branch
+          </p>
+        </div>
+        
+        <!-- 
+          This div is EMPTY now.
+          JavaScript will automatically fill it with fee cards
+          based on what the user selected in Step 2
+        -->
+        <div id="feeCardsContainer">
+          <!-- Fee cards will appear here automatically -->
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="btn-row">
+          <button class="btn-back" onclick="goToStep2FromStep3()">
+            <i class="fas fa-arrow-left"></i> Back
+          </button>
+          <button class="btn-primary btn-submit" onclick="submitRegistration()">
+            <i class="fas fa-paper-plane"></i> Submit Registration
+          </button>
+        </div>
+        
+        <div class="msg-box" id="step3Msg"></div>
+        
+      </div>
+      <!-- END STEP 3 -->
+
+
+      <!-- ==========================================
+           SUCCESS SCREEN
+           Shown after successful submission
+      ========================================== -->
+      <div class="form-step" id="successScreen" style="display:none;">
+        
+        <div class="success-container">
+          
+          <!-- Big checkmark icon -->
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          
+          <h2 class="success-title">Registration Submitted!</h2>
+          
+          <p class="success-text">
+            Your institution has been successfully registered on FeeFinder.
+            Our team will verify your Registration ID within 2-3 business days.
+            You will receive a confirmation email once approved.
+          </p>
+          
+          <!-- The institution name will be shown here by JavaScript -->
+          <div class="success-detail" id="successDetails"></div>
+          
+          <!-- Buttons -->
+          <button class="btn-primary" onclick="window.location.href='index.html'">
+            <i class="fas fa-home"></i> Go to Login Page
+          </button>
+          
+          <button class="btn-outline" onclick="resetForm()">
+            <i class="fas fa-plus"></i> Register Another Institution
+          </button>
+          
+        </div>
+        
+      </div>
+      <!-- END SUCCESS SCREEN -->
+
+
+    </div>
+    <!-- END FORM CARD -->
+  </div>
+  <!-- END FORM CONTAINER -->
+
+
+  <!-- Loading Spinner -->
+  <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+    <div class="spinner"></div>
+  </div>
+
+
+  <!-- Load register.js as module (needed for Firebase imports) -->
+  <script type="module" src="js/register.js"></script>
+
+</body>
+</html>

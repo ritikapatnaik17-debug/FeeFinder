@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<!-- 
+  FILE: index.html
+  PURPOSE: Parent Login and Signup Page
+  This is the FIRST page users see
+-->
+<html lang="en">
+<head>
+  <!-- This tells the browser what kind of document this is -->
+  <meta charset="UTF-8" />
+  
+  <!-- This makes the page look good on mobile phones -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- The title shown in the browser tab -->
+  <title>FeeFinder — Parent Login</title>
+  
+  <!-- Link to our CSS file that makes things beautiful -->
+  <link rel="stylesheet" href="css/style.css" />
+  
+  <!-- Google Fonts: We load Times New Roman equivalent + Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Font Awesome for icons (the + icon, eye icon, etc.) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+
+  <!-- ============================================
+       TOP NAVIGATION BAR
+       This is the blue bar at the top of the page
+  ============================================ -->
+  <nav class="navbar">
+    
+    <!-- Left side: Logo and App Name -->
+    <div class="nav-brand">
+      <!-- Graduation cap icon -->
+      <i class="fas fa-graduation-cap nav-logo-icon"></i>
+      <!-- App name -->
+      <span class="nav-title">FeeFinder</span>
+    </div>
+    
+    <!-- Right side: Navigation links + Plus button -->
+    <div class="nav-right">
+      <!-- Plus (+) button: When clicked, opens register.html (Page 2) -->
+      <!-- title="Register Institution" shows a tooltip on hover -->
+      <button class="plus-btn" onclick="window.location.href='register.html'" title="Register Institution">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+    
+  </nav>
+  <!-- END NAVBAR -->
+
+
+  <!-- ============================================
+       HERO SECTION (Big blue background area)
+       This is the gradient background section
+  ============================================ -->
+  <section class="hero-section">
+    
+    <!-- Decorative circles in background (just for design) -->
+    <div class="hero-circle hero-circle-1"></div>
+    <div class="hero-circle hero-circle-2"></div>
+    
+    <!-- Badge text at top -->
+    <div class="hero-badge">TRANSPARENT EDUCATION FEES</div>
+    
+    <!-- Main heading -->
+    <h1 class="hero-title">Find Schools &amp; Colleges<br/>Near You</h1>
+    
+    <!-- Subtitle -->
+    <p class="hero-subtitle">
+      Search and compare fees across hundreds of institutions in your city.<br/>
+      Make informed decisions for your future.
+    </p>
+    
+  </section>
+  <!-- END HERO SECTION -->
+
+
+  <!-- ============================================
+       AUTH CARD (The white box with login/signup)
+       This floats over the hero section
+  ============================================ -->
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      
+      <!-- ---- TABS: Login / Signup ---- -->
+      <!-- These are the two buttons to switch between login and signup -->
+      <div class="auth-tabs">
+        <!-- Login tab: active by default (shown first) -->
+        <button class="tab-btn active" id="loginTab" onclick="showTab('login')">
+          Sign In
+        </button>
+        <!-- Signup tab -->
+        <button class="tab-btn" id="signupTab" onclick="showTab('signup')">
+          Sign Up
+        </button>
+      </div>
+      <!-- END TABS -->
+
+
+      <!-- ============================================
+           LOGIN FORM
+           This form is shown when user clicks "Sign In"
+      ============================================ -->
+      <div class="form-section" id="loginSection">
+        
+        <h2 class="form-title">Welcome Back</h2>
+        <p class="form-subtitle">Sign in to your parent account</p>
+        
+        <!-- Email input field -->
+        <div class="input-group">
+          <label class="input-label">Email Address</label>
+          <div class="input-wrapper">
+            <!-- Email icon inside input -->
+            <i class="fas fa-envelope input-icon"></i>
+            <!-- 
+              type="email" → only allows valid email format
+              id="loginEmail" → we use this in JavaScript to get the value
+              placeholder → light grey text shown when empty
+            -->
+            <input 
+              type="email" 
+              id="loginEmail" 
+              class="input-field" 
+              placeholder="Enter your email"
+            />
+          </div>
+        </div>
+        
+        <!-- Password input field -->
+        <div class="input-group">
+          <label class="input-label">Password</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock input-icon"></i>
+            <!-- 
+              type="password" → hides the text with dots
+              id="loginPassword" → used in JavaScript
+            -->
+            <input 
+              type="password" 
+              id="loginPassword" 
+              class="input-field" 
+              placeholder="Enter your password"
+            />
+            <!-- Eye icon: clicking this shows/hides password -->
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPassword', this)"></i>
+          </div>
+        </div>
+        
+        <!-- Forgot Password link -->
+        <div class="forgot-wrapper">
+          <a href="#" class="forgot-link" onclick="showForgotPassword()">
+            Forgot Password?
+          </a>
+        </div>
+        
+        <!-- Login Button -->
+        <!-- onclick="loginParent()" → calls the loginParent function in login.js -->
+        <button class="btn-primary" onclick="loginParent()">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+        
+        <!-- Divider line with "or" text -->
+        <div class="divider">
+          <span>or continue with</span>
+        </div>
+        
+        <!-- Google Sign In Button -->
+        <button class="btn-google" onclick="loginWithGoogle()">
+          <!-- Google icon using SVG (simple colored G) -->
+          <svg class="google-icon" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Continue with Google
+        </button>
+        
+        <!-- Message area: shows success/error messages -->
+        <!-- id="loginMsg" → we show messages here from JavaScript -->
+        <div class="msg-box" id="loginMsg"></div>
+        
+      </div>
+      <!-- END LOGIN FORM -->
+
+
+      <!-- ============================================
+           SIGNUP FORM
+           This form is shown when user clicks "Sign Up"
+           display:none means it's hidden by default
+      ============================================ -->
+      <div class="form-section" id="signupSection" style="display:none;">
+        
+        <h2 class="form-title">Create Account</h2>
+        <p class="form-subtitle">Join FeeFinder as a parent</p>
+        
+        <!-- Full Name -->
+        <div class="input-group">
+          <label class="input-label">Full Name</label>
+          <div class="input-wrapper">
+            <i class="fas fa-user input-icon"></i>
+            <input 
+              type="text" 
+              id="signupName" 
+              class="input-field" 
+              placeholder="Enter your full name"
+            />
+          </div>
+        </div>
+        
+        <!-- Email -->
+        <div class="input-group">
+          <label class="input-label">Email Address</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope input-icon"></i>
+            <input 
+              type="email" 
+              id="signupEmail" 
+              class="input-field" 
+              placeholder="Enter your email"
+            />
+          </div>
+        </div>
+        
+        <!-- Phone Number -->
+        <div class="input-group">
+          <label class="input-label">Phone Number</label>
+          <div class="input-wrapper">
+            <i class="fas fa-phone input-icon"></i>
+            <input 
+              type="tel" 
+              id="signupPhone" 
+              class="input-field" 
+              placeholder="Enter your phone number"
+            />
+          </div>
+        </div>
+        
+        <!-- Password -->
+        <div class="input-group">
+          <label class="input-label">Password</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock input-icon"></i>
+            <input 
+              type="password" 
+              id="signupPassword" 
+              class="input-field" 
+              placeholder="Create a password (min 6 chars)"
+            />
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('signupPassword', this)"></i>
+          </div>
+        </div>
+        
+        <!-- Confirm Password -->
+        <div class="input-group">
+          <label class="input-label">Confirm Password</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock input-icon"></i>
+            <input 
+              type="password" 
+              id="signupConfirmPassword" 
+              class="input-field" 
+              placeholder="Repeat your password"
+            />
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('signupConfirmPassword', this)"></i>
+          </div>
+        </div>
+        
+        <!-- Signup Button -->
+        <button class="btn-primary" onclick="signupParent()">
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
+        
+        <!-- Divider -->
+        <div class="divider">
+          <span>or continue with</span>
+        </div>
+        
+        <!-- Google Signup -->
+        <button class="btn-google" onclick="loginWithGoogle()">
+          <svg class="google-icon" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Continue with Google
+        </button>
+        
+        <!-- Message Box -->
+        <div class="msg-box" id="signupMsg"></div>
+        
+      </div>
+      <!-- END SIGNUP FORM -->
+
+
+      <!-- ============================================
+           FORGOT PASSWORD SECTION
+           Hidden by default, shown when user clicks
+           "Forgot Password?"
+      ============================================ -->
+      <div class="form-section" id="forgotSection" style="display:none;">
+        
+        <h2 class="form-title">Reset Password</h2>
+        <p class="form-subtitle">We'll send a reset link to your email</p>
+        
+        <!-- Email input for forgot password -->
+        <div class="input-group">
+          <label class="input-label">Email Address</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope input-icon"></i>
+            <input 
+              type="email" 
+              id="forgotEmail" 
+              class="input-field" 
+              placeholder="Enter your registered email"
+            />
+          </div>
+        </div>
+        
+        <!-- Send Reset Email Button -->
+        <button class="btn-primary" onclick="resetPassword()">
+          <i class="fas fa-paper-plane"></i> Send Reset Email
+        </button>
+        
+        <!-- Back to Login link -->
+        <p class="back-link">
+          <a href="#" onclick="showTab('login')">
+            <i class="fas fa-arrow-left"></i> Back to Sign In
+          </a>
+        </p>
+        
+        <!-- Message Box -->
+        <div class="msg-box" id="forgotMsg"></div>
+        
+      </div>
+      <!-- END FORGOT PASSWORD SECTION -->
+
+
+    </div>
+    <!-- END AUTH CARD -->
+  </div>
+  <!-- END AUTH WRAPPER -->
+
+
+  <!-- ============================================
+       EMAIL VERIFICATION POPUP/MODAL
+       This appears after signup asking user to verify email
+  ============================================ -->
+  <div class="modal-overlay" id="verifyModal" style="display:none;">
+    <div class="modal-box">
+      
+      <!-- Email icon -->
+      <div class="modal-icon">
+        <i class="fas fa-envelope-circle-check"></i>
+      </div>
+      
+      <h3 class="modal-title">Verify Your Email</h3>
+      
+      <p class="modal-text">
+        We've sent a verification email to your inbox.<br/>
+        Please check your email and click the link to verify.
+      </p>
+      
+      <!-- This shows which email was used -->
+      <p class="modal-email" id="modalEmailDisplay"></p>
+      
+      <!-- Resend button if email not received -->
+      <button class="btn-primary" onclick="resendVerification()">
+        <i class="fas fa-redo"></i> Resend Email
+      </button>
+      
+      <!-- Close button -->
+      <button class="btn-outline" onclick="closeVerifyModal()">
+        Got it! Sign In
+      </button>
+      
+      <div class="msg-box" id="verifyMsg"></div>
+      
+    </div>
+  </div>
+  <!-- END VERIFY MODAL -->
+
+
+  <!-- ============================================
+       LOADING SPINNER
+       Shows while Firebase is processing
+  ============================================ -->
+  <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+    <div class="spinner"></div>
+  </div>
+
+
+  <!-- ============================================
+       JAVASCRIPT FILES
+       type="module" is needed for Firebase imports to work
+       We load these at the BOTTOM so HTML loads first
+  ============================================ -->
+  <script type="module" src="js/login.js"></script>
+
+</body>
+</html>

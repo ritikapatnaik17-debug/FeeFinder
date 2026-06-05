@@ -1,0 +1,800 @@
+/* ============================================================
+   FILE: css/register.css
+   PURPOSE: Styles for register.html (Institution Registration)
+============================================================ */
+
+/* ---- Reset & Base ---- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #1565C0;
+  --primary-light: #42A5F5;
+  --indigo: #3949AB;
+  --white: #FFFFFF;
+  --light-bg: #EBF5FB;
+  --text-dark: #1A237E;
+  --text-gray: #546E7A;
+  --border: #BBDEFB;
+  --error: #E53935;
+  --success: #2E7D32;
+  --shadow: 0 8px 32px rgba(21, 101, 192, 0.15);
+  --card-bg: #F0F7FF;
+}
+
+body {
+  font-family: 'Times New Roman', 'Playfair Display', Georgia, serif;
+  background-color: var(--light-bg);
+  color: var(--text-dark);
+  min-height: 100vh;
+}
+
+
+/* ============================================================
+   NAVBAR
+============================================================ */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 65px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 20px rgba(21, 101, 192, 0.1);
+}
+
+.nav-logo-icon {
+  font-size: 24px;
+  color: var(--primary);
+  margin-right: 10px;
+}
+
+.nav-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.back-btn {
+  padding: 9px 20px;
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Times New Roman', Georgia, serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back-btn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+
+/* ============================================================
+   PAGE HEADER (Blue banner)
+============================================================ */
+.page-header {
+  background: linear-gradient(135deg, #1565C0 0%, #0D47A1 40%, #1976D2 70%, #42A5F5 100%);
+  padding: 110px 40px 70px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+
+.header-circle-1 {
+  width: 300px;
+  height: 300px;
+  top: -100px;
+  right: 80px;
+}
+
+.header-circle-2 {
+  width: 200px;
+  height: 200px;
+  bottom: -60px;
+  left: 60px;
+}
+
+.header-title {
+  font-size: 38px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+
+.header-subtitle {
+  font-size: 16px;
+  color: rgba(255,255,255,0.85);
+  max-width: 550px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+
+/* ============================================================
+   PROGRESS STEPS
+============================================================ */
+.progress-container {
+  display: flex;
+  justify-content: center;
+  padding: 30px 20px;
+  background: white;
+  border-bottom: 1px solid var(--border);
+}
+
+.progress-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  max-width: 500px;
+  width: 100%;
+}
+
+/* Each step item */
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* The numbered circle */
+.step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #E0E0E0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.4s ease;
+}
+
+/* Label below circle */
+.step-label {
+  font-size: 12px;
+  color: var(--text-gray);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Active step (current step) */
+.step.active .step-circle {
+  background: linear-gradient(135deg, var(--primary), var(--indigo));
+  color: white;
+  box-shadow: 0 4px 12px rgba(21, 101, 192, 0.4);
+}
+
+.step.active .step-label {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Completed step */
+.step.completed .step-circle {
+  background: #4CAF50;
+  color: white;
+}
+
+/* Line connecting steps */
+.step-line {
+  flex: 1;
+  height: 3px;
+  background: #E0E0E0;
+  margin-bottom: 20px;
+  transition: background 0.4s ease;
+}
+
+.step-line.active {
+  background: linear-gradient(to right, var(--primary), var(--indigo));
+}
+
+
+/* ============================================================
+   FORM CONTAINER AND CARD
+============================================================ */
+.form-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px 80px;
+}
+
+.form-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 45px 40px;
+  width: 100%;
+  max-width: 680px;
+  box-shadow: var(--shadow);
+  animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ============================================================
+   STEP HEADER
+============================================================ */
+.step-header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--light-bg);
+}
+
+.step-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+  font-family: 'Times New Roman', Georgia, serif;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-title i {
+  color: var(--primary);
+}
+
+.step-subtitle {
+  font-size: 14px;
+  color: var(--text-gray);
+}
+
+
+/* ============================================================
+   FORM INPUT STYLES (same as style.css but for register)
+============================================================ */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 7px;
+  letter-spacing: 0.3px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.textarea-wrapper {
+  align-items: flex-start;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--primary-light);
+  font-size: 15px;
+  z-index: 1;
+}
+
+.input-field {
+  width: 100%;
+  padding: 13px 14px 13px 45px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: 'Times New Roman', Georgia, serif;
+  color: var(--text-dark);
+  background: #F8FBFF;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+}
+
+/* Dropdown (select) specific styling */
+.select-field {
+  cursor: pointer;
+  appearance: none; /* Remove default dropdown arrow */
+  /* Add custom arrow with background image */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%231565C0'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  padding-right: 40px;
+}
+
+/* Textarea (for address) */
+.textarea-field {
+  padding: 13px 14px 13px 45px;
+  resize: vertical; /* User can resize vertically only */
+  min-height: 90px;
+}
+
+/* Small note text below input */
+.field-note {
+  font-size: 12px;
+  color: var(--text-gray);
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.field-note i {
+  color: var(--primary-light);
+}
+
+
+/* ============================================================
+   BRANCH CHECKBOX GRID
+   For college branch selection
+============================================================ */
+.branch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 15px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+}
+
+/* Each checkbox item */
+.branch-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.branch-checkbox:hover {
+  border-color: var(--primary);
+  background: #F0F7FF;
+}
+
+/* When checkbox is checked, highlight the item */
+.branch-checkbox input:checked + .branch-label {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.branch-checkbox input:checked ~ .branch-label {
+  color: var(--primary);
+}
+
+.branch-checkbox:has(input:checked) {
+  border-color: var(--primary);
+  background: #E3F2FD;
+}
+
+.branch-check {
+  accent-color: var(--primary); /* Colors the checkbox in primary color */
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.branch-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dark);
+  font-family: 'Times New Roman', Georgia, serif;
+}
+
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn-primary {
+  padding: 13px 28px;
+  background: linear-gradient(135deg, var(--primary), var(--indigo));
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Times New Roman', Georgia, serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(21, 101, 192, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(21, 101, 192, 0.45);
+}
+
+.btn-next {
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-submit {
+  flex: 1;
+  justify-content: center;
+}
+
+.btn-back {
+  padding: 13px 20px;
+  background: transparent;
+  color: var(--text-gray);
+  border: 1.5px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: 'Times New Roman', Georgia, serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-back:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-outline {
+  padding: 13px 28px;
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Times New Roman', Georgia, serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-outline:hover {
+  background: var(--light-bg);
+}
+
+/* Row of buttons (back + next) */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+
+/* ============================================================
+   FEE CARDS
+   Each class or branch gets its own card
+============================================================ */
+
+/* Title above all fee cards */
+.fee-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fee-section-title i {
+  color: var(--primary);
+}
+
+/* Individual fee card for each class/branch */
+.fee-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+  
+  /* Smooth entrance animation */
+  animation: fadeInCard 0.4s ease;
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header inside each fee card */
+.fee-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.fee-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--indigo));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.fee-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+  font-family: 'Times New Roman', Georgia, serif;
+}
+
+/* Grid inside fee card: 2 columns */
+.fee-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Each fee field inside the grid */
+.fee-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-gray);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fee-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Times New Roman', Georgia, serif;
+  color: var(--text-dark);
+  background: white;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.fee-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.08);
+}
+
+/* Total Fee row (spans full width) */
+.fee-total-row {
+  grid-column: 1 / -1; /* Spans both columns */
+  background: linear-gradient(135deg, var(--primary), var(--indigo));
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.fee-total-label {
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fee-total-value {
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+
+
+/* ============================================================
+   MESSAGE BOX
+============================================================ */
+.msg-box {
+  margin-top: 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+  min-height: 20px;
+  transition: all 0.3s ease;
+}
+
+.msg-box:not(:empty) {
+  padding: 12px;
+}
+
+.msg-success {
+  background: #E8F5E9;
+  color: var(--success);
+  border: 1px solid #A5D6A7;
+}
+
+.msg-error {
+  background: #FFEBEE;
+  color: var(--error);
+  border: 1px solid #FFCDD2;
+}
+
+
+/* ============================================================
+   SUCCESS SCREEN
+============================================================ */
+.success-container {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.success-icon {
+  font-size: 70px;
+  color: #4CAF50;
+  margin-bottom: 20px;
+  animation: bounceIn 0.6s ease;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.success-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 15px;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+
+.success-text {
+  font-size: 15px;
+  color: var(--text-gray);
+  line-height: 1.8;
+  margin-bottom: 20px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.success-detail {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-bottom: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+
+/* ============================================================
+   LOADING SPINNER
+============================================================ */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.85);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--border);
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* ============================================================
+   RESPONSIVE DESIGN
+============================================================ */
+@media (max-width: 600px) {
+  
+  .navbar {
+    padding: 0 16px;
+  }
+  
+  .header-title {
+    font-size: 26px;
+  }
+  
+  .page-header {
+    padding: 100px 20px 55px;
+  }
+  
+  .form-card {
+    padding: 25px 18px;
+  }
+  
+  .fee-grid {
+    grid-template-columns: 1fr; /* Stack to single column on mobile */
+  }
+  
+  .branch-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .btn-row {
+    flex-direction: column;
+  }
+  
+  .progress-steps {
+    gap: 0;
+  }
+  
+  .step-label {
+    font-size: 10px;
+  }
+}
