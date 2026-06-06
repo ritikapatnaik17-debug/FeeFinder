@@ -1,632 +1,743 @@
 // ============================================================
 // FILE: js/login.js
-// PURPOSE: Handles all login, signup, Google sign-in,
-//          email verification, and password reset logic
+// PURPOSE: All login, signup, Google sign-in, verification logic
 //
-// This file is like the "brain" of the login page
+// HOW THIS WORKS NOW:
+// We use the "compat" version of Firebase.
+// This means we write: firebase.auth() and firebase.firestore()
+// Instead of complex imports.
+// This is MUCH simpler and works in any browser!
 // ============================================================
-
-// Import Firebase tools we need
-// 'auth' and 'db' come from our firebase-config.js
-import { auth, db } from './firebase-config.js';
-
-// Import specific Authentication functions from Firebase
-import {
-  createUserWithEmailAndPassword,  // Creates new account
-  signInWithEmailAndPassword,       // Signs in existing user
-  GoogleAuthProvider,               // For Google Sign-In
-  signInWithPopup,                  // Opens Google popup
-  sendEmailVerification,            // Sends verification email
-  sendPasswordResetEmail,           // Sends reset password email
-  onAuthStateChanged                // Watches if user is logged in
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-// Import Firestore functions to save data to database
-import {
-  doc,       // Creates a reference to a specific document
-  setDoc,    // Saves/sets data in a document
-  getDoc,    // Gets data from a document
-  serverTimestamp  // Gets the current time from Firebase server
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 // ============================================================
-// HELPER FUNCTIONS
-// These are small utility functions we use throughout the code
+// SECTION 1: HELPER FUNCTIONS
+// Small tools we use throughout the file
 // ============================================================
 
 /**
- * showLoading() and hideLoading()
- * Shows/hides the spinning loader overlay
- * We call this before Firebase operations (which can take time)
+ * showLoading()
+ * Shows the spinning loader on screen
+ * Call this BEFORE any Firebase operation
  */
 function showLoading() {
   document.getElementById('loadingOverlay').style.display = 'flex';
 }
 
+/**
+ * hideLoading()
+ * Hides the spinning loader
+ * Call this AFTER Firebase operation finishes
+ */
 function hideLoading() {
   document.getElementById('loadingOverlay').style.display = 'none';
 }
 
 /**
- * showMessage(elementId, message, type)
- * Shows a colored message in the message box
- * 
- * @param {string} elementId - The id of the msg-box div
- * @param {string} message - The text to show
- * @param {string} type - 'success' (green) or 'error' (red)
+ * showMessage(boxId, message, type)
+ * Displays a colored message in a message box
+ *
+ * @param {string} boxId    - The id of the msg-box element
+ * @param {string} message  - The text to display
+ * @param {string} type     - 'success' = green, 'error' = red
  */
-function showMessage(elementId, message, type) {
-  // Find the message box element by its id
-  const msgBox = document.getElementById(elementId);
+function showMessage(boxId, message, type) {
+  // Find the element
+  var box = document.getElementById(boxId);
+  
+  // If element doesn't exist, stop
+  if (!box) return;
   
   // Set the text
-  msgBox.textContent = message;
+  box.textContent = message;
   
-  // Remove old color classes first
-  msgBox.classList.remove('msg-success', 'msg-error');
+  // Remove old color classes
+  box.classList.remove('msg-success', 'msg-error');
   
-  // Add the correct color class
+  // Add the right color class
   if (type === 'success') {
-    msgBox.classList.add('msg-success');
+    box.classList.add('msg-success');
   } else {
-    msgBox.classList.add('msg-error');
+    box.classList.add('msg-error');
   }
 }
 
 /**
- * clearMessage(elementId)
- * Clears the message box
+ * clearMessage(boxId)
+ * Clears a message box
  */
-function clearMessage(elementId) {
-  const msgBox = document.getElementById(elementId);
-  msgBox.textContent = '';
-  msgBox.classList.remove('msg-success', 'msg-error');
+function clearMessage(boxId) {
+  var box = document.getElementById(boxId);
+  if (!box) return;
+  box.textContent = '';
+  box.classList.remove('msg-success', 'msg-error');
+}
+
+/**
+ * setButtonLoading(btnId, isLoading, originalText)
+ * Changes button text to show loading state
+ * This prevents users from clicking twice!
+ *
+ * @param {string}  btnId        - Button element id
+ * @param {boolean} isLoading    - true = show loading, false = restore
+ * @param {string}  originalText - The original button label
+ */
+function setButtonLoading(btnId, isLoading, originalText) {
+  var btn = document.getElementById(btnId);
+  if (!btn) return;
+  
+  if (isLoading) {
+    // Disable the button and show spinner text
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please wait...';
+    btn.style.opacity = '0.8';
+  } else {
+    // Re-enable the button
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    btn.style.opacity = '1';
+  }
 }
 
 
 // ============================================================
-// TAB SWITCHING
-// Controls which form is visible: login, signup, or forgot
+// SECTION 2: TAB SWITCHING
+// Controls which form section is visible
 // ============================================================
 
 /**
  * showTab(tabName)
- * Shows the selected tab section and hides the others
- * 
- * @param {string} tabName - 'login', 'signup', or 'forgot'
+ * Shows the correct form section based on tab clicked
+ *
+ * @param {string} tabName - 'login' or 'signup'
  */
 function showTab(tabName) {
-  // Get all three sections
-  const loginSection = document.getElementById('loginSection');
-  const signupSection = document.getElementById('signupSection');
-  const forgotSection = document.getElementById('forgotSection');
+  // Get all sections
+  var loginSection = document.getElementById('loginSection');
+  var signupSection = document.getElementById('signupSection');
+  var forgotSection = document.getElementById('forgotSection');
   
   // Get tab buttons
-  const loginTab = document.getElementById('loginTab');
-  const signupTab = document.getElementById('signupTab');
+  var loginTab = document.getElementById('loginTab');
+  var signupTab = document.getElementById('signupTab');
   
-  // Hide ALL sections first
+  // Hide everything first
   loginSection.style.display = 'none';
   signupSection.style.display = 'none';
   forgotSection.style.display = 'none';
   
-  // Remove 'active' class from both tabs
+  // Remove active class from both tabs
   loginTab.classList.remove('active');
   signupTab.classList.remove('active');
   
-  // Show the correct section based on tabName
+  // Show the selected section
   if (tabName === 'login') {
     loginSection.style.display = 'block';
     loginTab.classList.add('active');
+    clearMessage('loginMsg');
+    
   } else if (tabName === 'signup') {
     signupSection.style.display = 'block';
     signupTab.classList.add('active');
-  } else if (tabName === 'forgot') {
-    // Forgot section doesn't have a tab button
-    // We just show the section
-    forgotSection.style.display = 'block';
+    clearMessage('signupMsg');
   }
 }
 
-// Make showTab available globally (so onclick in HTML can call it)
-window.showTab = showTab;
-
-
-// ============================================================
-// SHOW FORGOT PASSWORD SECTION
-// ============================================================
-
 /**
- * showForgotPassword()
- * Hides login form and shows forgot password form
+ * showForgotSection()
+ * Shows the Forgot Password section
+ * Hides login and signup tabs
  */
-function showForgotPassword() {
-  // Hide all sections
+function showForgotSection() {
   document.getElementById('loginSection').style.display = 'none';
   document.getElementById('signupSection').style.display = 'none';
-  
-  // Show forgot section
   document.getElementById('forgotSection').style.display = 'block';
   
   // Remove active from tabs
   document.getElementById('loginTab').classList.remove('active');
   document.getElementById('signupTab').classList.remove('active');
+  
+  clearMessage('forgotMsg');
 }
-
-// Make available globally
-window.showForgotPassword = showForgotPassword;
 
 
 // ============================================================
-// TOGGLE PASSWORD VISIBILITY (Eye Icon)
+// SECTION 3: PASSWORD TOGGLE (Eye Icon)
 // ============================================================
 
 /**
  * togglePassword(inputId, eyeIcon)
- * Shows or hides the password text when eye icon is clicked
- * 
- * @param {string} inputId - id of the password input field
- * @param {HTMLElement} eyeIcon - the eye icon element that was clicked
+ * Shows or hides the password text
+ *
+ * @param {string}      inputId - The id of the password input
+ * @param {HTMLElement} eyeIcon - The eye icon that was clicked
  */
 function togglePassword(inputId, eyeIcon) {
-  // Get the password input field
-  const input = document.getElementById(inputId);
+  var input = document.getElementById(inputId);
   
-  // If currently showing dots (password), switch to text
   if (input.type === 'password') {
-    input.type = 'text';  // Show the password
+    // Show the password text
+    input.type = 'text';
     eyeIcon.classList.remove('fa-eye');
-    eyeIcon.classList.add('fa-eye-slash'); // Change to strikethrough eye
+    eyeIcon.classList.add('fa-eye-slash');
   } else {
-    input.type = 'password'; // Hide the password again
+    // Hide the password again
+    input.type = 'password';
     eyeIcon.classList.remove('fa-eye-slash');
     eyeIcon.classList.add('fa-eye');
   }
 }
 
-// Make available globally
-window.togglePassword = togglePassword;
-
 
 // ============================================================
-// SIGNUP FUNCTION
-// Creates a new parent account
+// SECTION 4: SIGNUP FUNCTION
+// Creates a new parent account in Firebase
 // ============================================================
 
 /**
  * signupParent()
- * This function runs when user clicks "Create Account" button
- * Steps:
- * 1. Gets values from form
- * 2. Validates them
- * 3. Creates Firebase account
- * 4. Saves parent data to Firestore
- * 5. Sends verification email
- * 6. Shows confirmation popup
+ * Main signup function - runs when user clicks "Create Account"
+ *
+ * FLOW:
+ * 1. Read form values
+ * 2. Validate all fields
+ * 3. Create account in Firebase Auth
+ * 4. Save data to Firestore database
+ * 5. Send email verification
+ * 6. Show verification popup
  */
-async function signupParent() {
-  // STEP 1: Get values from input fields
-  // .value gets the text inside an input field
-  const fullName = document.getElementById('signupName').value.trim();
-  const email = document.getElementById('signupEmail').value.trim();
-  const phone = document.getElementById('signupPhone').value.trim();
-  const password = document.getElementById('signupPassword').value;
-  const confirmPassword = document.getElementById('signupConfirmPassword').value;
+function signupParent() {
   
-  // Clear any previous messages
+  // --- STEP 1: Read values from the form ---
+  // .value gets the text the user typed
+  // .trim() removes extra spaces from beginning/end
+  var fullName = document.getElementById('signupName').value.trim();
+  var email = document.getElementById('signupEmail').value.trim();
+  var phone = document.getElementById('signupPhone').value.trim();
+  var password = document.getElementById('signupPassword').value;
+  var confirmPassword = document.getElementById('signupConfirmPassword').value;
+  
+  // Clear any previous error messages
   clearMessage('signupMsg');
   
-  // STEP 2: Validate the inputs
-  // We check that all fields are filled and correct
+  // --- STEP 2: Validate inputs ---
+  // Check each field one by one
   
-  if (!fullName) {
+  if (fullName === '') {
     showMessage('signupMsg', '⚠️ Please enter your full name.', 'error');
-    return; // Stop the function here
+    document.getElementById('signupName').focus(); // Move cursor to this field
+    return; // STOP the function here
   }
   
-  if (!email) {
+  if (email === '') {
     showMessage('signupMsg', '⚠️ Please enter your email address.', 'error');
+    document.getElementById('signupEmail').focus();
     return;
   }
   
-  if (!phone || phone.length < 10) {
-    showMessage('signupMsg', '⚠️ Please enter a valid 10-digit phone number.', 'error');
+  // Check email format using a simple test
+  // This regex checks if email has @ and . in right places
+  var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+    showMessage('signupMsg', '⚠️ Please enter a valid email address.', 'error');
+    document.getElementById('signupEmail').focus();
+    return;
+  }
+  
+  if (phone === '') {
+    showMessage('signupMsg', '⚠️ Please enter your phone number.', 'error');
+    document.getElementById('signupPhone').focus();
+    return;
+  }
+  
+  if (phone.length < 10) {
+    showMessage('signupMsg', '⚠️ Phone number must be at least 10 digits.', 'error');
+    document.getElementById('signupPhone').focus();
+    return;
+  }
+  
+  if (password === '') {
+    showMessage('signupMsg', '⚠️ Please create a password.', 'error');
+    document.getElementById('signupPassword').focus();
     return;
   }
   
   if (password.length < 6) {
-    showMessage('signupMsg', '⚠️ Password must be at least 6 characters.', 'error');
+    showMessage('signupMsg', '⚠️ Password must be at least 6 characters long.', 'error');
+    document.getElementById('signupPassword').focus();
+    return;
+  }
+  
+  if (confirmPassword === '') {
+    showMessage('signupMsg', '⚠️ Please confirm your password.', 'error');
+    document.getElementById('signupConfirmPassword').focus();
     return;
   }
   
   if (password !== confirmPassword) {
-    showMessage('signupMsg', '⚠️ Passwords do not match. Please re-enter.', 'error');
+    showMessage('signupMsg', '⚠️ Passwords do not match! Please re-enter.', 'error');
+    document.getElementById('signupConfirmPassword').focus();
     return;
   }
   
-  // STEP 3: Show loading spinner (Firebase can take 1-3 seconds)
+  // --- STEP 3: Show loading state ---
   showLoading();
+  setButtonLoading('signupBtn', true, '<i class="fas fa-user-plus"></i> Create Account');
   
-  try {
-    // STEP 4: Create the Firebase account
-    // 'createUserWithEmailAndPassword' creates account in Firebase Auth
-    // It returns a 'userCredential' object with the user's info
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
-    // Get the user object from the result
-    // user.uid is a unique ID Firebase gives every user (like a roll number)
-    const user = userCredential.user;
-    
-    // STEP 5: Save parent details to Firestore database
-    // We create a document in the 'parents' collection
-    // The document ID is the user's UID (so we can find it later)
-    await setDoc(doc(db, 'parents', user.uid), {
-      fullName: fullName,           // Parent's full name
-      email: email,                 // Parent's email
-      phone: phone,                 // Parent's phone number
-      accountType: 'parent',        // Type of account
-      emailVerified: false,         // Will become true after verification
-      createdAt: serverTimestamp()  // Exact time of account creation (from Firebase server)
+  // --- STEP 4: Create account in Firebase ---
+  // auth.createUserWithEmailAndPassword() is the Firebase function
+  // It returns a "Promise" - meaning it will finish in the future
+  // .then() runs when it SUCCEEDS
+  // .catch() runs when it FAILS
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(function(userCredential) {
+      
+      // userCredential.user is the newly created user object
+      // user.uid is the unique ID Firebase gives every user
+      var user = userCredential.user;
+      
+      console.log('✅ Account created! User ID:', user.uid);
+      
+      // --- STEP 5: Save parent data to Firestore ---
+      // db.collection('parents') → refers to the 'parents' collection
+      // .doc(user.uid) → creates/updates document with user's ID
+      // .set() → saves the data
+      return db.collection('parents').doc(user.uid).set({
+        fullName: fullName,
+        email: email,
+        phone: phone,
+        accountType: 'parent',
+        emailVerified: false,
+        // firebase.firestore.FieldValue.serverTimestamp() 
+        // saves the exact time from Firebase server
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+    })
+    .then(function() {
+      
+      console.log('✅ Parent data saved to Firestore!');
+      
+      // --- STEP 6: Send email verification ---
+      // Firebase sends an email to the user's inbox
+      // The email contains a link to verify their account
+      var user = auth.currentUser;
+      return user.sendEmailVerification();
+      
+    })
+    .then(function() {
+      
+      console.log('✅ Verification email sent!');
+      
+      // --- STEP 7: Hide loading and show success ---
+      hideLoading();
+      setButtonLoading('signupBtn', false, '<i class="fas fa-user-plus"></i> Create Account');
+      
+      // Show the verification modal popup
+      showVerifyModal(email);
+      
+    })
+    .catch(function(error) {
+      
+      // Something went wrong!
+      hideLoading();
+      setButtonLoading('signupBtn', false, '<i class="fas fa-user-plus"></i> Create Account');
+      
+      // Log the error so we can see it in browser console
+      console.error('❌ Signup error:', error.code, error.message);
+      
+      // Show user-friendly error message
+      var errorMessage = '';
+      
+      // error.code tells us WHAT went wrong
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = '❌ This email is already registered. Please sign in or use a different email.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = '❌ The email address is not valid. Please check it.';
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = '❌ Password is too weak. Use at least 6 characters with numbers.';
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = '❌ No internet connection. Please check your connection and try again.';
+      } else {
+        // For any other error, show the Firebase message
+        errorMessage = '❌ Error: ' + error.message;
+      }
+      
+      showMessage('signupMsg', errorMessage, 'error');
     });
-    
-    // STEP 6: Send verification email
-    // Firebase sends an email with a link to verify the account
-    await sendEmailVerification(user);
-    
-    // STEP 7: Hide loading
-    hideLoading();
-    
-    // STEP 8: Show the email verification popup
-    showVerifyModal(email);
-    
-  } catch (error) {
-    // If anything goes wrong, Firebase gives us an error
-    hideLoading();
-    
-    // Convert Firebase error codes to friendly messages
-    let errorMessage = '';
-    
-    // error.code tells us what went wrong
-    if (error.code === 'auth/email-already-in-use') {
-      errorMessage = '❌ This email is already registered. Please sign in instead.';
-    } else if (error.code === 'auth/invalid-email') {
-      errorMessage = '❌ Invalid email format. Please check your email.';
-    } else if (error.code === 'auth/weak-password') {
-      errorMessage = '❌ Password is too weak. Use at least 6 characters.';
-    } else {
-      // For any other errors, show the Firebase error message
-      errorMessage = '❌ ' + error.message;
-    }
-    
-    showMessage('signupMsg', errorMessage, 'error');
-  }
 }
-
-// Make available globally
-window.signupParent = signupParent;
 
 
 // ============================================================
-// LOGIN FUNCTION
+// SECTION 5: LOGIN FUNCTION
 // Signs in an existing parent
 // ============================================================
 
 /**
  * loginParent()
- * This function runs when user clicks "Sign In" button
- * Steps:
- * 1. Gets email and password
- * 2. Validates
- * 3. Signs in with Firebase
- * 4. Checks if email is verified
- * 5. Redirects or shows error
+ * Signs in with email and password
+ *
+ * FLOW:
+ * 1. Read email and password
+ * 2. Validate them
+ * 3. Sign in with Firebase
+ * 4. Check if email is verified
+ * 5. If yes → welcome message
+ * 6. If no → show verification reminder
  */
-async function loginParent() {
-  // Get values from login form
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
+function loginParent() {
   
-  // Clear previous messages
+  // Read values
+  var email = document.getElementById('loginEmail').value.trim();
+  var password = document.getElementById('loginPassword').value;
+  
   clearMessage('loginMsg');
   
   // Validate
-  if (!email) {
-    showMessage('loginMsg', '⚠️ Please enter your email.', 'error');
+  if (email === '') {
+    showMessage('loginMsg', '⚠️ Please enter your email address.', 'error');
+    document.getElementById('loginEmail').focus();
     return;
   }
   
-  if (!password) {
+  if (password === '') {
     showMessage('loginMsg', '⚠️ Please enter your password.', 'error');
+    document.getElementById('loginPassword').focus();
     return;
   }
   
   // Show loading
   showLoading();
+  setButtonLoading('loginBtn', true, '<i class="fas fa-sign-in-alt"></i> Sign In');
   
-  try {
-    // Sign in with Firebase Authentication
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    
-    // Check if the user has verified their email
-    if (!user.emailVerified) {
-      // Not verified yet
+  // Sign in with Firebase
+  auth.signInWithEmailAndPassword(email, password)
+    .then(function(userCredential) {
+      
+      var user = userCredential.user;
+      
+      console.log('✅ Signed in as:', user.email);
+      
+      // Check if email is verified
+      if (!user.emailVerified) {
+        // NOT verified
+        hideLoading();
+        setButtonLoading('loginBtn', false, '<i class="fas fa-sign-in-alt"></i> Sign In');
+        
+        showMessage(
+          'loginMsg',
+          '⚠️ Please verify your email first! Check your inbox for the verification link.',
+          'error'
+        );
+        
+        // Show the verification popup again
+        showVerifyModal(email);
+        return;
+      }
+      
+      // Email IS verified → Update Firestore
+      return db.collection('parents').doc(user.uid).set(
+        { emailVerified: true },
+        { merge: true }  // merge: true = only update this field, keep others
+      );
+      
+    })
+    .then(function() {
+      
       hideLoading();
+      setButtonLoading('loginBtn', false, '<i class="fas fa-sign-in-alt"></i> Sign In');
       
-      // Show message asking them to verify
-      showMessage('loginMsg', '⚠️ Please verify your email first. Check your inbox!', 'error');
+      var user = auth.currentUser;
       
-      // Show the verification modal again
-      showVerifyModal(email);
-      return;
-    }
-    
-    // Email is verified! Update Firestore to reflect this
-    await setDoc(doc(db, 'parents', user.uid), {
-      emailVerified: true
-    }, { merge: true }); 
-    // merge: true means "update only these fields, don't delete others"
-    
-    hideLoading();
-    
-    // Show success message
-    showMessage('loginMsg', '✅ Login successful! Welcome back.', 'success');
-    
-    // Wait 1.5 seconds then redirect to main app
-    // (For now we stay on the page since we're only building auth)
-    setTimeout(() => {
-      // In a full app, this would go to the main dashboard
-      // For now, show a welcome alert
-      alert('✅ Welcome to FeeFinder, ' + (user.displayName || email) + '!');
-    }, 1500);
-    
-  } catch (error) {
-    hideLoading();
-    
-    let errorMessage = '';
-    
-    if (error.code === 'auth/user-not-found') {
-      errorMessage = '❌ No account found with this email. Please sign up first.';
-    } else if (error.code === 'auth/wrong-password') {
-      errorMessage = '❌ Incorrect password. Please try again.';
-    } else if (error.code === 'auth/invalid-credential') {
-      errorMessage = '❌ Invalid email or password. Please check and try again.';
-    } else if (error.code === 'auth/too-many-requests') {
-      errorMessage = '❌ Too many failed attempts. Please wait a few minutes.';
-    } else {
-      errorMessage = '❌ ' + error.message;
-    }
-    
-    showMessage('loginMsg', errorMessage, 'error');
-  }
+      if (user && user.emailVerified) {
+        showMessage('loginMsg', '✅ Login successful! Welcome back.', 'success');
+        
+        // Wait 2 seconds then show welcome
+        setTimeout(function() {
+          alert('✅ Welcome to FeeFinder!\n\nYou are now logged in as: ' + user.email);
+          // In a full app, you would redirect to: window.location.href = 'dashboard.html';
+        }, 1500);
+      }
+      
+    })
+    .catch(function(error) {
+      
+      hideLoading();
+      setButtonLoading('loginBtn', false, '<i class="fas fa-sign-in-alt"></i> Sign In');
+      
+      console.error('❌ Login error:', error.code, error.message);
+      
+      var errorMessage = '';
+      
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = '❌ No account found with this email. Please sign up first.';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = '❌ Wrong password. Please try again.';
+      } else if (error.code === 'auth/invalid-credential') {
+        errorMessage = '❌ Invalid email or password. Please check and try again.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = '❌ Invalid email format.';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = '❌ Too many failed attempts. Account temporarily locked. Try again later.';
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = '❌ No internet. Please check your connection.';
+      } else {
+        errorMessage = '❌ ' + error.message;
+      }
+      
+      showMessage('loginMsg', errorMessage, 'error');
+    });
 }
-
-// Make available globally
-window.loginParent = loginParent;
 
 
 // ============================================================
-// GOOGLE SIGN-IN
+// SECTION 6: GOOGLE SIGN-IN
 // ============================================================
 
 /**
  * loginWithGoogle()
- * Opens Google Sign-In popup
- * After login, saves user data to Firestore
+ * Opens Google Sign-In popup window
  */
-async function loginWithGoogle() {
-  // Create a Google provider object
-  // This tells Firebase we want to use Google for sign-in
-  const provider = new GoogleAuthProvider();
+function loginWithGoogle() {
+  
+  // Create Google provider
+  // This tells Firebase: "use Google for login"
+  var provider = new firebase.auth.GoogleAuthProvider();
+  
+  // Add scope to get user's email
+  provider.addScope('email');
+  provider.addScope('profile');
   
   showLoading();
   
-  try {
-    // Opens a popup window for Google login
-    const result = await signInWithPopup(auth, provider);
-    
-    // Get the user from the result
-    const user = result.user;
-    
-    // Check if this user already exists in our database
-    // doc(db, 'parents', user.uid) creates a reference to the document
-    const docRef = doc(db, 'parents', user.uid);
-    const docSnap = await getDoc(docRef);
-    
-    // If the document does NOT exist (new user), save their data
-    if (!docSnap.exists()) {
-      await setDoc(docRef, {
-        fullName: user.displayName || 'Google User', // Name from Google account
-        email: user.email,
-        phone: user.phoneNumber || '',  // Google might provide phone number
-        accountType: 'parent',
-        emailVerified: true,  // Google accounts are already verified
-        createdAt: serverTimestamp(),
-        loginMethod: 'google'  // How they signed in
-      });
-    }
-    
-    hideLoading();
-    
-    // Success! Show welcome message
-    showMessage('loginMsg', '✅ Google Sign-In successful! Welcome.', 'success');
-    
-    setTimeout(() => {
-      alert('✅ Welcome to FeeFinder, ' + user.displayName + '!');
-    }, 1500);
-    
-  } catch (error) {
-    hideLoading();
-    
-    let errorMessage = '';
-    
-    if (error.code === 'auth/popup-closed-by-user') {
-      errorMessage = '⚠️ Sign-in popup was closed. Please try again.';
-    } else {
-      errorMessage = '❌ Google Sign-In failed: ' + error.message;
-    }
-    
-    // Show error in whichever section is currently visible
-    if (document.getElementById('signupSection').style.display !== 'none') {
-      showMessage('signupMsg', errorMessage, 'error');
-    } else {
-      showMessage('loginMsg', errorMessage, 'error');
-    }
-  }
+  // Open the Google popup
+  auth.signInWithPopup(provider)
+    .then(function(result) {
+      
+      var user = result.user;
+      
+      console.log('✅ Google Sign-In success:', user.email);
+      
+      // Check if this user exists in our database
+      return db.collection('parents').doc(user.uid).get()
+        .then(function(doc) {
+          
+          if (!doc.exists) {
+            // NEW user - save their data to Firestore
+            return db.collection('parents').doc(user.uid).set({
+              fullName: user.displayName || 'Google User',
+              email: user.email,
+              phone: user.phoneNumber || '',
+              accountType: 'parent',
+              emailVerified: true,
+              loginMethod: 'google',
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+          // If user already exists, just continue (no need to save again)
+        });
+      
+    })
+    .then(function() {
+      
+      hideLoading();
+      
+      var user = auth.currentUser;
+      showMessage('loginMsg', '✅ Google Sign-In successful! Welcome.', 'success');
+      
+      setTimeout(function() {
+        alert('✅ Welcome to FeeFinder!\n' + user.displayName + ' (' + user.email + ')');
+      }, 1000);
+      
+    })
+    .catch(function(error) {
+      
+      hideLoading();
+      
+      console.error('❌ Google Sign-In error:', error.code);
+      
+      var errorMessage = '';
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = '⚠️ Sign-in was cancelled. Please try again.';
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMessage = '❌ Popup was blocked by your browser. Please allow popups for this site.';
+      } else {
+        errorMessage = '❌ Google Sign-In failed: ' + error.message;
+      }
+      
+      // Show error in whichever section is visible
+      var signupVisible = document.getElementById('signupSection').style.display !== 'none';
+      showMessage(signupVisible ? 'signupMsg' : 'loginMsg', errorMessage, 'error');
+    });
 }
-
-// Make available globally
-window.loginWithGoogle = loginWithGoogle;
 
 
 // ============================================================
-// FORGOT PASSWORD
+// SECTION 7: FORGOT PASSWORD
 // ============================================================
 
 /**
  * resetPassword()
- * Sends a password reset email to the user
+ * Sends password reset email
  */
-async function resetPassword() {
-  const email = document.getElementById('forgotEmail').value.trim();
+function resetPassword() {
+  
+  var email = document.getElementById('forgotEmail').value.trim();
   
   clearMessage('forgotMsg');
   
-  if (!email) {
+  if (email === '') {
     showMessage('forgotMsg', '⚠️ Please enter your email address.', 'error');
+    document.getElementById('forgotEmail').focus();
     return;
   }
   
   showLoading();
   
-  try {
-    // Firebase sends a reset email automatically
-    await sendPasswordResetEmail(auth, email);
-    
-    hideLoading();
-    
-    showMessage(
-      'forgotMsg', 
-      '✅ Password reset email sent! Please check your inbox.', 
-      'success'
-    );
-    
-    // After 3 seconds, go back to login
-    setTimeout(() => {
-      showTab('login');
-    }, 3000);
-    
-  } catch (error) {
-    hideLoading();
-    
-    let errorMessage = '';
-    
-    if (error.code === 'auth/user-not-found') {
-      errorMessage = '❌ No account found with this email.';
-    } else {
-      errorMessage = '❌ ' + error.message;
-    }
-    
-    showMessage('forgotMsg', errorMessage, 'error');
-  }
+  auth.sendPasswordResetEmail(email)
+    .then(function() {
+      
+      hideLoading();
+      
+      showMessage(
+        'forgotMsg',
+        '✅ Password reset email sent! Please check your inbox (and spam folder).',
+        'success'
+      );
+      
+      // Go back to login after 3 seconds
+      setTimeout(function() {
+        showTab('login');
+      }, 3000);
+      
+    })
+    .catch(function(error) {
+      
+      hideLoading();
+      
+      console.error('❌ Reset password error:', error.code);
+      
+      var errorMessage = '';
+      
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = '❌ No account found with this email address.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = '❌ Invalid email format.';
+      } else {
+        errorMessage = '❌ ' + error.message;
+      }
+      
+      showMessage('forgotMsg', errorMessage, 'error');
+    });
 }
-
-// Make available globally
-window.resetPassword = resetPassword;
 
 
 // ============================================================
-// EMAIL VERIFICATION MODAL
+// SECTION 8: EMAIL VERIFICATION MODAL
 // ============================================================
 
 /**
  * showVerifyModal(email)
  * Shows the email verification popup
- * @param {string} email - The email to display in the modal
  */
 function showVerifyModal(email) {
-  // Show the email in the modal
+  // Display the user's email in the popup
   document.getElementById('modalEmailDisplay').textContent = email;
   
-  // Show the modal overlay
+  // Show the modal
   document.getElementById('verifyModal').style.display = 'flex';
 }
 
 /**
  * closeVerifyModal()
- * Closes the verification popup and shows login form
+ * Closes the popup and goes to login tab
  */
 function closeVerifyModal() {
   document.getElementById('verifyModal').style.display = 'none';
-  
-  // Switch to login tab
   showTab('login');
 }
 
-// Make available globally
-window.closeVerifyModal = closeVerifyModal;
-
 /**
  * resendVerification()
- * Resends the verification email if user didn't receive it
+ * Resends the verification email
  */
-async function resendVerification() {
+function resendVerification() {
+  
   clearMessage('verifyMsg');
   
-  // Check if a user is currently signed in
-  const user = auth.currentUser;
+  var user = auth.currentUser;
   
   if (!user) {
-    showMessage('verifyMsg', '❌ No user logged in. Please sign up again.', 'error');
+    showMessage('verifyMsg', '❌ No user found. Please sign up again.', 'error');
     return;
   }
   
   showLoading();
   
-  try {
-    // Send verification email again
-    await sendEmailVerification(user);
-    
-    hideLoading();
-    
-    showMessage('verifyMsg', '✅ Verification email resent! Please check your inbox.', 'success');
-    
-  } catch (error) {
-    hideLoading();
-    showMessage('verifyMsg', '❌ Could not resend email. Please try again later.', 'error');
-  }
+  user.sendEmailVerification()
+    .then(function() {
+      hideLoading();
+      showMessage('verifyMsg', '✅ Verification email resent! Check your inbox.', 'success');
+    })
+    .catch(function(error) {
+      hideLoading();
+      showMessage('verifyMsg', '❌ Could not resend. Please wait a few minutes.', 'error');
+    });
 }
-
-// Make available globally
-window.resendVerification = resendVerification;
 
 
 // ============================================================
-// AUTH STATE OBSERVER
-// This watches if user is logged in or out
-// It runs automatically when the page loads
+// SECTION 9: AUTH STATE LISTENER
+// Watches if user is logged in or out automatically
 // ============================================================
 
 /**
- * onAuthStateChanged listens for login/logout events
- * 
- * If user is already logged in (from a previous session):
- *   - We can redirect them or update the UI
- * 
- * If user is logged out:
- *   - Show the login form
+ * auth.onAuthStateChanged() runs automatically:
+ * - When page loads
+ * - When user logs in
+ * - When user logs out
  */
-onAuthStateChanged(auth, (user) => {
+auth.onAuthStateChanged(function(user) {
   if (user) {
-    // User is signed in
-    console.log('User is logged in:', user.email);
-    
-    // You could redirect to dashboard here
-    // For now, we just log it
-    
+    // User is currently signed in
+    console.log('👤 User is logged in:', user.email, '| Verified:', user.emailVerified);
   } else {
-    // User is signed out
-    console.log('No user is signed in.');
+    // No user is signed in
+    console.log('👤 No user is signed in.');
   }
+});
+
+
+// ============================================================
+// SECTION 10: KEYBOARD SUPPORT
+// Allow pressing ENTER key to submit forms
+// ============================================================
+
+// When page loads, add keyboard listeners
+document.addEventListener('DOMContentLoaded', function() {
+  
+  // Enter key on login form
+  document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+    // e.key === 'Enter' checks if Enter was pressed
+    if (e.key === 'Enter') {
+      loginParent();
+    }
+  });
+  
+  // Enter key on signup confirm password
+  document.getElementById('signupConfirmPassword').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      signupParent();
+    }
+  });
+  
+  // Enter key on forgot password
+  document.getElementById('forgotEmail').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      resetPassword();
+    }
+  });
+  
+  console.log('✅ FeeFinder Login Page loaded successfully!');
 });

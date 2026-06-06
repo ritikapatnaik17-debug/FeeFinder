@@ -1,22 +1,13 @@
 // ============================================================
 // FILE: js/firebase-config.js
-// PURPOSE: This file connects our web app to Firebase
-// Think of this as the "phone number" we use to call Firebase
+// PURPOSE: Connects our app to Firebase
+// 
+// IMPORTANT: We use the CDN version (loaded from internet)
+// This is the EASIEST way for beginners
 // ============================================================
 
-// We import specific tools from Firebase that we need
-// 'initializeApp' starts the Firebase connection
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-// 'getAuth' gives us the authentication tool (login/signup)
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-// 'getFirestore' gives us the database tool
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// ✅ Your Firebase Configuration
-// These values tell Firebase "which project" you want to connect to
-// These are YOUR actual values from the Firebase console
+// Your Firebase configuration object
+// These are YOUR actual project details
 const firebaseConfig = {
   apiKey: "AIzaSyD87-LpwQcLajOy6lGgOMJunGnd11rn5rk",
   authDomain: "feefinder-eb594.firebaseapp.com",
@@ -27,15 +18,17 @@ const firebaseConfig = {
   measurementId: "G-EXMEF0J2VV"
 };
 
-// This line actually STARTS the Firebase connection using your config above
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase App
+// This STARTS the connection to Firebase
+firebase.initializeApp(firebaseConfig);
 
-// This creates the Authentication service
-// We will use 'auth' in login.js and register.js
-export const auth = getAuth(app);
+// Create Auth service
+// auth = the tool we use for login, signup, Google sign-in
+const auth = firebase.auth();
 
-// This creates the Firestore Database service
-// We will use 'db' to save data
-export const db = getFirestore(app);
+// Create Firestore Database service
+// db = the tool we use to save and read data
+const db = firebase.firestore();
 
-// We use 'export' so that other files (login.js, register.js) can use auth and db
+// We print this to confirm Firebase connected successfully
+console.log("✅ Firebase connected successfully!");
