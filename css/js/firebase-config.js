@@ -1,14 +1,11 @@
 // ============================================================
 // FILE: js/firebase-config.js
 // PURPOSE: Connects our app to Firebase
-// 
-// IMPORTANT: We use the CDN version (loaded from internet)
-// This is the EASIEST way for beginners
+// This file runs FIRST before login.js and register.js
 // ============================================================
 
-// Your Firebase configuration object
-// These are YOUR actual project details
-const firebaseConfig = {
+// Your Firebase project credentials
+var firebaseConfig = {
   apiKey: "AIzaSyD87-LpwQcLajOy6lGgOMJunGnd11rn5rk",
   authDomain: "feefinder-eb594.firebaseapp.com",
   projectId: "feefinder-eb594",
@@ -18,17 +15,13 @@ const firebaseConfig = {
   measurementId: "G-EXMEF0J2VV"
 };
 
-// Initialize Firebase App
-// This STARTS the connection to Firebase
+// Initialize Firebase — starts the connection to your project
 firebase.initializeApp(firebaseConfig);
 
-// Create Auth service
-// auth = the tool we use for login, signup, Google sign-in
-const auth = firebase.auth();
+// auth = tool we use for login, signup, Google sign-in
+var auth = firebase.auth();
 
-// Create Firestore Database service
-// db = the tool we use to save and read data
-const db = firebase.firestore();
+// db = tool we use to save and read data from Firestore
+var db = firebase.firestore();
 
-// We print this to confirm Firebase connected successfully
 console.log("✅ Firebase connected successfully!");

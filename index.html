@@ -2,76 +2,66 @@
 <!--
   FILE: index.html
   PURPOSE: Parent Login and Signup Page
-  
-  HOW FIREBASE IS LOADED:
-  We use Firebase CDN links at the bottom of the page.
-  CDN means the Firebase code is loaded directly from Google's servers.
-  This is the easiest way - no complex imports needed!
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FeeFinder — Parent Login</title>
-  
+
   <!-- Our CSS file -->
   <link rel="stylesheet" href="css/style.css" />
-  
-  <!-- Google Font (web version of Times New Roman style) -->
+
+  <!-- Google Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+
   <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
 </head>
 
 <body>
 
-  <!-- ============================================
-       NAVBAR - Top bar with logo and + button
-  ============================================ -->
+  <!-- ==================== NAVBAR ==================== -->
   <nav class="navbar">
-    
     <div class="nav-brand">
       <i class="fas fa-graduation-cap nav-logo-icon"></i>
       <span class="nav-title">FeeFinder</span>
     </div>
-    
-    <div class="nav-right">
-      <!-- PLUS (+) button → opens register.html -->
-      <button 
-        class="plus-btn" 
-        onclick="window.location.href='register.html'" 
+    <div>
+      <!-- Plus button opens register.html -->
+      <button
+        class="plus-btn"
+        onclick="window.location.href='register.html'"
         title="Register Institution"
       >
         <i class="fas fa-plus"></i>
       </button>
     </div>
-    
   </nav>
 
-
-  <!-- ============================================
-       HERO SECTION - Blue gradient background
-  ============================================ -->
+  <!-- ==================== HERO SECTION ==================== -->
   <section class="hero-section">
     <div class="hero-circle hero-circle-1"></div>
     <div class="hero-circle hero-circle-2"></div>
     <div class="hero-badge">TRANSPARENT EDUCATION FEES</div>
-    <h1 class="hero-title">Find Schools &amp; Colleges<br/>Near You</h1>
+    <h1 class="hero-title">Find Schools &amp; Colleges<br />Near You</h1>
     <p class="hero-subtitle">
-      Search and compare fees across hundreds of institutions in your city.<br/>
+      Search and compare fees across hundreds of institutions in your city.<br />
       Make informed decisions for your future.
     </p>
   </section>
 
-
-  <!-- ============================================
-       AUTH CARD - White box floating over hero
-  ============================================ -->
+  <!-- ==================== AUTH CARD ==================== -->
   <div class="auth-wrapper">
     <div class="auth-card">
-      
+
       <!-- TABS: Sign In / Sign Up -->
       <div class="auth-tabs">
         <button class="tab-btn active" id="loginTab" onclick="showTab('login')">
@@ -82,291 +72,271 @@
         </button>
       </div>
 
+      <!-- ======== LOGIN SECTION ======== -->
+      <div class="form-section active-section" id="loginSection">
 
-      <!-- ==========================================
-           LOGIN FORM
-      ========================================== -->
-      <div id="loginSection">
-        
         <h2 class="form-title">Welcome Back</h2>
         <p class="form-subtitle">Sign in to your parent account</p>
-        
+
         <!-- Email -->
         <div class="input-group">
           <label class="input-label">Email Address</label>
           <div class="input-wrapper">
             <i class="fas fa-envelope input-icon"></i>
-            <input 
-              type="email" 
-              id="loginEmail" 
-              class="input-field" 
+            <input
+              type="email"
+              id="loginEmail"
+              class="input-field"
               placeholder="Enter your email"
             />
           </div>
         </div>
-        
+
         <!-- Password -->
         <div class="input-group">
           <label class="input-label">Password</label>
           <div class="input-wrapper">
             <i class="fas fa-lock input-icon"></i>
-            <input 
-              type="password" 
-              id="loginPassword" 
-              class="input-field" 
+            <input
+              type="password"
+              id="loginPassword"
+              class="input-field"
               placeholder="Enter your password"
             />
-            <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPassword', this)"></i>
+            <i
+              class="fas fa-eye toggle-password"
+              onclick="togglePassword('loginPassword', this)"
+            ></i>
           </div>
         </div>
-        
+
         <!-- Forgot Password -->
         <div class="forgot-wrapper">
-          <a href="#" class="forgot-link" onclick="showForgotSection(); return false;">
+          <a
+            href="#"
+            class="forgot-link"
+            onclick="showTab('forgot'); return false;"
+          >
             Forgot Password?
           </a>
         </div>
-        
+
         <!-- Login Button -->
         <button class="btn-primary" id="loginBtn" onclick="loginParent()">
           <i class="fas fa-sign-in-alt"></i> Sign In
         </button>
-        
-        <!-- Divider -->
+
         <div class="divider"><span>or continue with</span></div>
-        
+
         <!-- Google Button -->
         <button class="btn-google" onclick="loginWithGoogle()">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-               alt="Google" 
-               class="google-icon" />
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="Google"
+            class="google-icon"
+          />
           Continue with Google
         </button>
-        
+
         <!-- Message Box -->
         <div class="msg-box" id="loginMsg"></div>
-        
+
       </div>
-      <!-- END LOGIN FORM -->
+      <!-- END LOGIN -->
 
+      <!-- ======== SIGNUP SECTION ======== -->
+      <div class="form-section" id="signupSection">
 
-      <!-- ==========================================
-           SIGNUP FORM
-      ========================================== -->
-      <div id="signupSection" style="display:none;">
-        
         <h2 class="form-title">Create Account</h2>
         <p class="form-subtitle">Join FeeFinder as a parent</p>
-        
+
         <!-- Full Name -->
         <div class="input-group">
           <label class="input-label">Full Name</label>
           <div class="input-wrapper">
             <i class="fas fa-user input-icon"></i>
-            <input 
-              type="text" 
-              id="signupName" 
-              class="input-field" 
+            <input
+              type="text"
+              id="signupName"
+              class="input-field"
               placeholder="Enter your full name"
             />
           </div>
         </div>
-        
+
         <!-- Email -->
         <div class="input-group">
           <label class="input-label">Email Address</label>
           <div class="input-wrapper">
             <i class="fas fa-envelope input-icon"></i>
-            <input 
-              type="email" 
-              id="signupEmail" 
-              class="input-field" 
+            <input
+              type="email"
+              id="signupEmail"
+              class="input-field"
               placeholder="Enter your email"
             />
           </div>
         </div>
-        
+
         <!-- Phone -->
         <div class="input-group">
           <label class="input-label">Phone Number</label>
           <div class="input-wrapper">
             <i class="fas fa-phone input-icon"></i>
-            <input 
-              type="tel" 
-              id="signupPhone" 
-              class="input-field" 
+            <input
+              type="tel"
+              id="signupPhone"
+              class="input-field"
               placeholder="Enter 10-digit phone number"
             />
           </div>
         </div>
-        
+
         <!-- Password -->
         <div class="input-group">
           <label class="input-label">Password</label>
           <div class="input-wrapper">
             <i class="fas fa-lock input-icon"></i>
-            <input 
-              type="password" 
-              id="signupPassword" 
-              class="input-field" 
+            <input
+              type="password"
+              id="signupPassword"
+              class="input-field"
               placeholder="Minimum 6 characters"
             />
-            <i class="fas fa-eye toggle-password" onclick="togglePassword('signupPassword', this)"></i>
+            <i
+              class="fas fa-eye toggle-password"
+              onclick="togglePassword('signupPassword', this)"
+            ></i>
           </div>
         </div>
-        
+
         <!-- Confirm Password -->
         <div class="input-group">
           <label class="input-label">Confirm Password</label>
           <div class="input-wrapper">
             <i class="fas fa-lock input-icon"></i>
-            <input 
-              type="password" 
-              id="signupConfirmPassword" 
-              class="input-field" 
+            <input
+              type="password"
+              id="signupConfirmPassword"
+              class="input-field"
               placeholder="Repeat your password"
             />
-            <i class="fas fa-eye toggle-password" onclick="togglePassword('signupConfirmPassword', this)"></i>
+            <i
+              class="fas fa-eye toggle-password"
+              onclick="togglePassword('signupConfirmPassword', this)"
+            ></i>
           </div>
         </div>
-        
+
         <!-- Signup Button -->
-        <!-- 
-          IMPORTANT: The id="signupBtn" helps us 
-          disable it while processing to avoid double clicks
-        -->
         <button class="btn-primary" id="signupBtn" onclick="signupParent()">
           <i class="fas fa-user-plus"></i> Create Account
         </button>
-        
-        <!-- Divider -->
+
         <div class="divider"><span>or continue with</span></div>
-        
+
         <!-- Google Button -->
         <button class="btn-google" onclick="loginWithGoogle()">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-               alt="Google" 
-               class="google-icon" />
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="Google"
+            class="google-icon"
+          />
           Continue with Google
         </button>
-        
-        <!-- Message Box for Signup -->
+
+        <!-- Message Box -->
         <div class="msg-box" id="signupMsg"></div>
-        
+
       </div>
-      <!-- END SIGNUP FORM -->
+      <!-- END SIGNUP -->
 
+      <!-- ======== FORGOT PASSWORD SECTION ======== -->
+      <div class="form-section" id="forgotSection">
 
-      <!-- ==========================================
-           FORGOT PASSWORD SECTION
-      ========================================== -->
-      <div id="forgotSection" style="display:none;">
-        
         <h2 class="form-title">Reset Password</h2>
-        <p class="form-subtitle">Enter your email to receive a reset link</p>
-        
+        <p class="form-subtitle">We will send a reset link to your email</p>
+
         <div class="input-group">
           <label class="input-label">Email Address</label>
           <div class="input-wrapper">
             <i class="fas fa-envelope input-icon"></i>
-            <input 
-              type="email" 
-              id="forgotEmail" 
-              class="input-field" 
+            <input
+              type="email"
+              id="forgotEmail"
+              class="input-field"
               placeholder="Enter your registered email"
             />
           </div>
         </div>
-        
+
         <button class="btn-primary" onclick="resetPassword()">
           <i class="fas fa-paper-plane"></i> Send Reset Email
         </button>
-        
-        <p class="back-link" style="margin-top:15px; text-align:center;">
+
+        <div class="back-link">
           <a href="#" onclick="showTab('login'); return false;">
             <i class="fas fa-arrow-left"></i> Back to Sign In
           </a>
-        </p>
-        
+        </div>
+
         <div class="msg-box" id="forgotMsg"></div>
-        
+
       </div>
-      <!-- END FORGOT SECTION -->
+      <!-- END FORGOT -->
 
     </div>
     <!-- END AUTH CARD -->
   </div>
 
 
-  <!-- ============================================
-       EMAIL VERIFICATION POPUP (Modal)
-  ============================================ -->
-  <div class="modal-overlay" id="verifyModal" style="display:none;">
+  <!-- ==================== VERIFY EMAIL MODAL ==================== -->
+  <div class="modal-overlay" id="verifyModal">
     <div class="modal-box">
       <div class="modal-icon">
         <i class="fas fa-envelope-circle-check"></i>
       </div>
       <h3 class="modal-title">Verify Your Email!</h3>
-      <p class="modal-text">
-        We sent a verification link to:
-      </p>
+      <p class="modal-text">We sent a verification link to:</p>
       <p class="modal-email" id="modalEmailDisplay"></p>
       <p class="modal-text">
-        Please check your inbox and click the link to activate your account.
+        Please check your inbox and click the link.<br />
+        Then come back and Sign In.
       </p>
-      <button class="btn-primary" style="margin-bottom:10px;" onclick="resendVerification()">
+      <button
+        class="btn-primary"
+        style="margin-top: 15px; margin-bottom: 5px"
+        onclick="resendVerification()"
+      >
         <i class="fas fa-redo"></i> Resend Email
       </button>
       <button class="btn-outline" onclick="closeVerifyModal()">
-        OK, I'll verify then Sign In
+        OK, I Will Verify Then Sign In
       </button>
       <div class="msg-box" id="verifyMsg"></div>
     </div>
   </div>
 
 
-  <!-- ============================================
-       LOADING SPINNER
-  ============================================ -->
-  <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+  <!-- ==================== LOADING OVERLAY ==================== -->
+  <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner"></div>
-    <p style="margin-top:15px; color:#1565C0; font-weight:600; font-family: 'Times New Roman', serif;">
-      Please wait...
-    </p>
+    <p class="loading-text">Please wait...</p>
   </div>
 
 
   <!-- ============================================================
-       FIREBASE SDK - Load from Google CDN
-       
-       IMPORTANT EXPLANATION FOR BEGINNERS:
-       
-       We load Firebase using <script> tags pointing to Google's servers.
-       This is called "CDN loading" (Content Delivery Network).
-       
-       You MUST load them in this ORDER:
-       1. firebase-app.js    → The main Firebase core
-       2. firebase-auth.js   → For login/signup features
-       3. firebase-firestore.js → For database features
-       4. firebase-config.js → OUR config file (after Firebase loads)
-       5. login.js           → OUR logic (after config loads)
-       
-       If you change this order, it will NOT work!
+       FIREBASE SDK — Load from Google in this exact order
+       1. firebase-app     (core — must be first)
+       2. firebase-auth    (for login/signup)
+       3. firebase-firestore (for database)
+       4. firebase-config.js (our config — after Firebase loads)
+       5. login.js         (our logic — last)
   ============================================================ -->
-  
-  <!-- Step 1: Firebase Core (must be first) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  
-  <!-- Step 2: Firebase Authentication -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  
-  <!-- Step 3: Firebase Firestore Database -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  
-  <!-- Step 4: OUR Firebase Config -->
   <script src="js/firebase-config.js"></script>
-  
-  <!-- Step 5: OUR Login Logic -->
   <script src="js/login.js"></script>
 
 </body>
